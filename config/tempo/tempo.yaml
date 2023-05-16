@@ -1,0 +1,17 @@
+receivers:
+  jaeger:
+    protocols:
+      thrift_http: {}
+  zipkin: {}
+  otlp:
+    protocols:
+      http: {}
+      grpc: {}
+  logstash:
+    protocols:
+      tcp:
+        endpoint: "0.0.0.0:5044"
+
+exporters:
+  jaeger:
+    endpoint: http://tempo:3100/api/traces

@@ -1,0 +1,134 @@
+version: "3.9" # optional since v1.27.0
+services:
+  igniteconnex:
+    image: ign-runtime:latest
+    ports:
+      - "1880:1880"
+    logging:
+      driver : loki
+      options : 
+        loki-url : "http://loki:3100/loki/api/v1/push"
+    environment:
+      IGNITE_API_SECRET: f9d2873131c42956b95ca1043b87668b879af144
+      PROJECT_NAME: igcnx-sparsh-dev
+      CLIENT_ID: dev-1
+      CLIENT_SECRET: Q3RL7gMqVYndMEWMJlkmZ023JztNjSGw
+      AUTH_SERVER_URL: https://sso.igniteconnex.io/auth
+      APP_URL: http://localhost:1880
+      START_MODE: PROJECT
+    volumes:
+      - ./data/ignite_flow:/usr/src/igniteconnex
+    depends_on:
+      - logstash
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus1
+  #   ports:
+  #     - 9090:9090
+  #   command:
+  #     - --config.file=/etc/prometheus/prometheus.yml
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  # pushgateway:
+  #   image: prom/pushgateway
+  #   container_name: pushgateway1
+  #   ports:
+  #     - 9091:9091
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.12.1
+    ports:
+      - "5044:5044"
+    volumes:
+      - ./logstash:/usr/share/logstash/pipeline
+    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+
+  tempo:
+    image: grafana/tempo:latest
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./config/tempo/tempo.yaml:/etc/tempo.yaml
+      - ./config/logs/log.txt:/etc/log.txt
+    ports:
+      - "6831"       # jaeger ingest
+      - "3100:3100"  # tempo
+
+
+  # elasticsearch:
+  #   image: docker.elastic.co/elasticsearch/elasticsearch:7.12.0
+  #   container_name: elasticsearch
+  #   environment:
+  #     - discovery.type=single-node
+  #   ports:
+  #     - "9200:9200"
+  #   depends_on:
+  #     - logstash
+
+  # kibana:
+  #   image: docker.elastic.co/kibana/kibana:7.12.0
+  #   ports:
+  #     - '5601:5601'
+  #   environment:
+  #     ELASTICSEARCH_URL: http://elasticsearch:9200
+  #     ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana1
+    ports:
+    - 3000:3000
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=password
+    depends_on:
+      - logstash
+  
+
+  # loki:
+  #   image: grafana/loki:2.8.0
+  #   volumes:
+  #     - ./local-config:/etc/config/loki.yaml
+  #   entrypoint:
+  #     - /usr/bin/loki
+  #     - -config.file=/etc/config/loki.yaml
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   ports:
+  #     - 3100:3100
+  #   depends_on:
+  #     - minio
+  # loki:
+  #   image: grafana/loki:2.8.0
+  #   command: -config.file=/etc/loki/local-config.yaml
+  #   ports:
+  #     - "3100:3100"
+
+
+
+  # promtail:
+  #   image: grafana/promtail:2.8.0
+  #   volumes:
+  #       - ./config.yaml:/etc/promtail/config.yaml:ro
+  #   #   - /var/run/docker.sock:/var/run/docker.sock
+  #   command: -config.file=/etc/promtail/config.yaml
+  #   depends_on:
+  #     - loki
+
+  # minio:
+  #   image: minio/minio:latest
+  #   restart: unless-stopped
+  #   entrypoint: sh
+  #   command: server /data
+  #   environment:
+  #     - MINIO_ACCESS_KEY=minio
+  #     - MINIO_SECRET_KEY=minio123
+  #   volumes:
+  #     - ./minio_data:/data
+  #   ports:
+  #     - 9000:9000
+
+  
+networks:
+  default:
+    external: true
+    name: ignite
