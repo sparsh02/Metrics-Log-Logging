@@ -1,0 +1,23 @@
+[2023-05-17T07:08:54.385] [INFO] default - 
+
+Welcome to Node-RED
+===================
+
+[2023-05-17T07:08:54.387] [INFO] default - Node-RED version: v3.0.2
+[2023-05-17T07:08:54.387] [INFO] default - Node.js  version: v16.20.0
+[2023-05-17T07:08:54.388] [INFO] default - Linux 5.15.49-linuxkit x64 LE
+[2023-05-17T07:08:54.761] [INFO] default - Loading palette nodes
+[2023-05-17T07:08:56.906] [INFO] default - Settings file  : /root/.node-red/settings.js
+[2023-05-17T07:08:56.907] [INFO] default - Context store  : 'default' [module=memory]
+[2023-05-17T07:08:56.908] [INFO] default - User directory : /usr/src/igniteconnex/flows
+[2023-05-17T07:08:56.909] [INFO] default - Projects directory: /usr/src/igniteconnex/flows/projects
+[2023-05-17T07:08:56.910] [WARN] default - No active project : using default flows file
+[2023-05-17T07:08:56.911] [INFO] default - Flows file     : /usr/src/igniteconnex/flows/flows.json
+[2023-05-17T07:08:56.929] [INFO] default - Server now running at http://127.0.0.1:1880/
+[2023-05-17T07:08:57.118] [WARN] default - Using unencrypted credentials
+[2023-05-17T07:08:57.150] [INFO] default - Starting flows
+[2023-05-17T07:08:57.288] [INFO] default - Started flows
+[2023-05-17T07:37:23.836] [WARN] default - [http request] JSON parse error
+[2023-05-17T07:37:23.842] [WARN] default - [http response] No response object
+[2023-05-17T08:04:52.508] [WARN] default - [http request] JSON parse error
+[2023-05-17T08:04:52.518] [WARN] default - [http response] No response object

@@ -4,10 +4,6 @@ services:
     image: ign-runtime:latest
     ports:
       - "1880:1880"
-    logging:
-      driver : loki
-      options : 
-        loki-url : "http://loki:3100/loki/api/v1/push"
     environment:
       IGNITE_API_SECRET: f9d2873131c42956b95ca1043b87668b879af144
       PROJECT_NAME: igcnx-sparsh-dev
@@ -18,8 +14,17 @@ services:
       START_MODE: PROJECT
     volumes:
       - ./data/ignite_flow:/usr/src/igniteconnex
-    depends_on:
-      - logstash
+    # depends_on:
+    #   - logstash
+  
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./promtail:/etc/promtail
+      - ./logs/:/var/log
+    command: -config.file=/etc/promtail/config.yaml
+
 
   # prometheus:
   #   image: prom/prometheus:latest
@@ -37,23 +42,23 @@ services:
   #   ports:
   #     - 9091:9091
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:7.12.1
-    ports:
-      - "5044:5044"
-    volumes:
-      - ./logstash:/usr/share/logstash/pipeline
-    command: logstash -f /usr/share/logstash/pipeline/logstash.conf
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:7.12.1
+  #   ports:
+  #     - "5044:5044"
+  #   volumes:
+  #     - ./logstash:/usr/share/logstash/pipeline
+  #   command: logstash -f /usr/share/logstash/pipeline/logstash.conf
 
-  tempo:
-    image: grafana/tempo:latest
-    command: ["-config.file=/etc/tempo.yaml"]
-    volumes:
-      - ./config/tempo/tempo.yaml:/etc/tempo.yaml
-      - ./config/logs/log.txt:/etc/log.txt
-    ports:
-      - "6831"       # jaeger ingest
-      - "3100:3100"  # tempo
+  # tempo:
+  #   image: grafana/tempo:latest
+  #   command: ["-config.file=/etc/tempo.yaml"]
+  #   volumes:
+  #     - ./config/tempo/tempo.yaml:/etc/tempo.yaml
+  #     - ./config/logs/log.txt:/etc/log.txt
+  #   ports:
+  #     - "6831"       # jaeger ingest
+  #     - "3100:3100"  # tempo
 
 
   # elasticsearch:
@@ -81,27 +86,34 @@ services:
     - 3000:3000
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=password
-    depends_on:
-      - logstash
-  
+    # depends_on:
+    #   - logstash
 
-  # loki:
-  #   image: grafana/loki:2.8.0
-  #   volumes:
-  #     - ./local-config:/etc/config/loki.yaml
-  #   entrypoint:
-  #     - /usr/bin/loki
-  #     - -config.file=/etc/config/loki.yaml
-  #   command: -config.file=/etc/loki/local-config.yaml
-  #   ports:
-  #     - 3100:3100
-  #   depends_on:
-  #     - minio
   # loki:
   #   image: grafana/loki:2.8.0
   #   command: -config.file=/etc/loki/local-config.yaml
   #   ports:
   #     - "3100:3100"
+
+  loki:
+    image: grafana/loki:2.8.0
+    volumes:
+      - ./config/loki/local-config.yaml:/etc/config/loki.yaml
+    entrypoint:
+      - /usr/bin/loki
+      - -config.file=/etc/config/loki.yaml
+    command: -config.file=/etc/loki/local-config.yaml
+    ports:
+      - 3100:3100
+  
+networks:
+  default:
+    external: true
+    name: ignite
+
+
+
+
 
 
 
@@ -126,9 +138,5 @@ services:
   #     - ./minio_data:/data
   #   ports:
   #     - 9000:9000
-
   
-networks:
-  default:
-    external: true
-    name: ignite
+

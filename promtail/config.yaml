@@ -1,0 +1,18 @@
+server:
+  http_listen_port: 0
+  grpc_listen_port: 0
+        
+positions:
+  filename: /tmp/positions.yaml
+        
+client:
+  url: https://597629:glc_eyJvIjoiODU2OTg1IiwibiI6Imxva2kxIiwiayI6Ik1GbUgxMUJiY3l3MGwydzVZQzQ3NzRLMSIsIm0iOnsiciI6InByb2QtdXMtZWFzdC0wIn19@logs-prod-006.grafana.net/api/prom/push
+        
+scrape_configs:
+- job_name: system
+  static_configs:
+  - targets:
+      - localhost
+    labels:
+      job: varlogs
+      __path__: /var/log/*.txt
