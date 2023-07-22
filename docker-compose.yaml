@@ -1,21 +1,7 @@
 version: "3.9" # optional since v1.27.0
 services:
   igniteconnex:
-    image: ign-runtime:latest
-    ports:
-      - "1880:1880"
-    environment:
-      IGNITE_API_SECRET: f9d2873131c42956b95ca1043b87668b879af144
-      PROJECT_NAME: igcnx-sparsh-dev
-      CLIENT_ID: dev-1
-      CLIENT_SECRET: Q3RL7gMqVYndMEWMJlkmZ023JztNjSGw
-      AUTH_SERVER_URL: https://sso.igniteconnex.io/auth
-      APP_URL: http://localhost:1880
-      START_MODE: PROJECT
-    volumes:
-      - ./data/ignite_flow:/usr/src/igniteconnex
-    # depends_on:
-    #   - logstash
+//add you service here
   
   promtail:
     image: grafana/promtail:latest
